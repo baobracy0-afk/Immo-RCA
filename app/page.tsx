@@ -1,120 +1,64 @@
 "use client";
 
 import {useMemo,useState} from "react";
-import {Search,MapPin,Home,Building2,Landmark,KeyRound,Heart,Plus,ShieldCheck,ChevronRight,X,UserPlus,Eye,EyeOff,CheckCircle2} from "lucide-react";
+import {Search,MapPin,Home,Building2,Landmark,KeyRound,Heart,Plus,ShieldCheck,ChevronRight,X,UserPlus,Eye,MessageCircle,Phone,Menu,SlidersHorizontal} from "lucide-react";
 
+const quartiers=["Tous les quartiers","Centre-ville","Lakouanga","Boy-Rabe","Kolongo","Miskine","PK5","PK12","Fouh","Sica 1","Sica 2","Bimbo"];
 const biens=[
- {id:1,type:"Maison",title:"Maison familiale à PK12",price:"450 000 FCFA / mois",loc:"PK12, Bangui",info:"3 chambres",img:"https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=900&q=80"},
- {id:2,type:"Terrain",title:"Terrain résidentiel 500 m²",price:"12 000 000 FCFA",loc:"Bimbo",info:"500 m²",img:"https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=900&q=80"},
- {id:3,type:"Appartement",title:"Appartement moderne centre-ville",price:"350 000 FCFA / mois",loc:"Centre-ville, Bangui",info:"2 chambres",img:"https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=900&q=80"}
+ {id:1,type:"Maison",transaction:"Location",title:"Maison familiale à PK12",price:450000,loc:"PK12, Bangui",info:"3 chambres · 250 m²",phone:"+23670000000",img:"https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=900&q=70",desc:"Maison familiale lumineuse avec cour, accès facile et environnement résidentiel."},
+ {id:2,type:"Terrain",transaction:"Vente",title:"Terrain résidentiel 500 m²",price:12000000,loc:"Bimbo",info:"500 m²",phone:"+23670000001",img:"https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=900&q=70",desc:"Parcelle adaptée à un projet résidentiel, localisation communiquée de façon approximative."},
+ {id:3,type:"Appartement",transaction:"Location",title:"Appartement moderne centre-ville",price:350000,loc:"Centre-ville, Bangui",info:"2 chambres · 110 m²",phone:"+23670000002",img:"https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=900&q=70",desc:"Appartement moderne proche des services, idéal pour une petite famille ou un professionnel."},
+ {id:4,type:"Commerce",transaction:"Location",title:"Local commercial à Lakouanga",price:275000,loc:"Lakouanga, Bangui",info:"80 m²",phone:"+23670000003",img:"https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&w=900&q=70",desc:"Local visible et accessible pour boutique, bureau ou activité de service."},
+ {id:5,type:"Maison",transaction:"Vente",title:"Villa 4 chambres à Boy-Rabe",price:28000000,loc:"Boy-Rabe, Bangui",info:"4 chambres · 420 m²",phone:"+23670000004",img:"https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?auto=format&fit=crop&w=900&q=70",desc:"Villa spacieuse avec espace extérieur. Contactez l'annonceur pour les détails et une visite."},
+ {id:6,type:"Appartement",transaction:"Location",title:"Appartement 2 chambres à Miskine",price:300000,loc:"Miskine, Bangui",info:"2 chambres · 95 m²",phone:"+23670000005",img:"https://images.unsplash.com/photo-1600607688969-a5bfcd646154?auto=format&fit=crop&w=900&q=70",desc:"Appartement pratique pour location longue durée."}
 ];
 
 export default function Page(){
- const[q,setQ]=useState("");
- const[type,setType]=useState("Tous");
- const[fav,setFav]=useState<number[]>([]);
- const[auth,setAuth]=useState<"signup"|"login"|null>(null);
- const[menu,setMenu]=useState(false);
- const[userRole,setUserRole]=useState<"client"|"vendeur"|null>(null);
- const filtered=useMemo(()=>biens.filter(b=>(type==="Tous"||b.type===type)&&(!q||((b.title+" "+b.loc).toLowerCase().includes(q.toLowerCase())))),[q,type]);
-
- return <main>
-  <header className="bg-white/95 backdrop-blur border-b sticky top-0 z-30">
-   <div className="container flex items-center justify-between py-4">
-    <div className="flex items-center gap-3">
-     <div className="w-10 h-10 rounded-xl bg-[#10233f] text-[#d8a84e] grid place-items-center font-black">R</div>
-     <div><b className="text-xl text-[#10233f]">Immo RCA</b><div className="text-xs text-gray-500">L'immobilier en Centrafrique</div></div>
-    </div>
-    <nav className="hidden lg:flex gap-6 text-sm font-semibold"><a href="#annonces">Annonces</a><a href="#terrains">Terrains</a><a href="#agences">Agences</a><a href="#comment">Comment ça marche</a></nav>
-    <div className="flex items-center gap-2">
-      <button onClick={()=>setAuth("login")} className="hidden sm:inline-flex btn dark"><KeyRound size={16}/><span className="ml-2">Se connecter</span></button>
-      <button onClick={()=>setAuth("signup")} className="btn gold"><UserPlus size={16}/><span className="ml-2">Créer un compte</span></button>
-    </div>
+ const[q,setQ]=useState(""); const[type,setType]=useState("Tous"); const[quartier,setQuartier]=useState("Tous les quartiers"); const[transaction,setTransaction]=useState("Tous"); const[detail,setDetail]=useState<any>(null); const[fav,setFav]=useState<number[]>([]); const[auth,setAuth]=useState<"signup"|"login"|null>(null); const[deposit,setDeposit]=useState(false); const[menu,setMenu]=useState(false);
+ const filtered=useMemo(()=>biens.filter(b=>(type==="Tous"||b.type===type)&&(transaction==="Tous"||b.transaction===transaction)&&(quartier==="Tous les quartiers"||b.loc.toLowerCase().includes(quartier.toLowerCase()))&&(!q||(b.title+" "+b.loc+" "+b.type).toLowerCase().includes(q.toLowerCase()))),[q,type,quartier,transaction]);
+ const money=(n:number)=>n.toLocaleString("fr-FR")+" FCFA";
+ const wa=(p:string)=>`https://wa.me/${p.replace(/\\D/g,"")}?text=${encodeURIComponent("Bonjour, je suis intéressé(e) par votre annonce sur Immo RCA.")}`;
+ return <main className="min-h-screen bg-[#fbf7ef] text-[#2b2924]">
+  <header className="sticky top-0 z-40 bg-[#fbf7ef]/95 backdrop-blur border-b border-[#e7ddcd]">
+   <div className="container flex items-center justify-between py-3">
+    <a href="#accueil" className="flex items-center gap-3"><div className="w-11 h-11 rounded-2xl bg-[#b95f45] text-white grid place-items-center font-black text-xl">I</div><div><b className="text-xl text-[#294b3b]">Immo RCA</b><div className="text-[11px] text-[#796f62]">Bangui · République centrafricaine</div></div></a>
+    <nav className="hidden lg:flex gap-6 text-sm font-bold"><a href="#annonces">Annonces</a><a href="#deposer">Déposer une annonce</a><a href="#apropos">À propos</a><a href="#contact">Contact</a></nav>
+    <div className="flex gap-2"><button onClick={()=>setAuth("login")} className="hidden sm:inline-flex btn outlineBtn"><KeyRound size={16}/>Connexion</button><button onClick={()=>setAuth("signup")} className="btn terracotta"><UserPlus size={16}/>Créer un compte</button><button onClick={()=>setMenu(!menu)} className="lg:hidden p-3 rounded-xl bg-white border"><Menu size={20}/></button></div>
    </div>
+   {menu&&<div className="lg:hidden border-t bg-white px-5 py-4 space-y-3 font-bold"><a className="block" href="#annonces" onClick={()=>setMenu(false)}>Annonces</a><a className="block" href="#deposer" onClick={()=>setMenu(false)}>Déposer une annonce</a><a className="block" href="#apropos" onClick={()=>setMenu(false)}>À propos</a><a className="block" href="#contact" onClick={()=>setMenu(false)}>Contact</a></div>}
   </header>
 
-  <section className="hero">
-   <div className="container py-16 md:py-20">
-    <span className="inline-flex gap-2 items-center bg-white/10 rounded-full px-4 py-2 text-sm"><ShieldCheck size={16}/> Annonces immobilières en RCA</span>
-    <h1 className="text-4xl md:text-6xl font-black max-w-4xl leading-tight mt-5">Trouvez votre <span className="text-[#d8a84e]">logement, terrain ou local</span> en Centrafrique.</h1>
-    <p className="text-white/75 text-lg max-w-2xl mt-5">Recherchez à Bangui et dans les autres villes, comparez les biens et contactez directement les propriétaires et agences.</p>
-    <div className="card mt-8 p-3 grid md:grid-cols-[1fr_180px_auto] gap-3">
-      <div className="flex items-center gap-2 px-3"><Search/><input className="outline-none w-full" placeholder="Quartier, ville, type de bien..." value={q} onChange={e=>setQ(e.target.value)}/></div>
-      <select className="input" value={type} onChange={e=>setType(e.target.value)}><option>Tous</option><option>Maison</option><option>Appartement</option><option>Terrain</option></select>
-      <button onClick={()=>document.getElementById("annonces")?.scrollIntoView({behavior:"smooth"})} className="btn gold">Rechercher</button>
-    </div>
-    <div className="flex flex-wrap gap-3 mt-5 text-sm text-white/70"><span>✓ Recherche simple</span><span>✓ Prix en FCFA</span><span>✓ Contact direct</span></div>
+  <section id="accueil" className="heroWarm">
+   <div className="container py-14 md:py-20"><span className="badge"><ShieldCheck size={15}/> Immobilier local à Bangui</span><h1 className="text-4xl md:text-6xl font-black max-w-4xl leading-tight mt-5 text-[#294b3b]">Trouvez un <span className="text-[#b95f45]">chez-vous</span> à Bangui.</h1><p className="max-w-2xl text-[#665d52] text-lg mt-4">Maisons, appartements, terrains et commerces. Recherchez simplement puis contactez directement l'annonceur sur WhatsApp.</p>
+    <div className="searchBox mt-8"><div className="flex items-center gap-2 flex-1 min-w-[220px]"><Search size={20}/><input value={q} onChange={e=>setQ(e.target.value)} className="bg-transparent outline-none w-full" placeholder="Quartier, type de bien..."/></div><select className="filterInput" value={quartier} onChange={e=>setQuartier(e.target.value)}>{quartiers.map(x=><option key={x}>{x}</option>)}</select><select className="filterInput" value={type} onChange={e=>setType(e.target.value)}><option>Tous</option><option>Maison</option><option>Appartement</option><option>Terrain</option><option>Commerce</option></select><select className="filterInput" value={transaction} onChange={e=>setTransaction(e.target.value)}><option>Tous</option><option>Location</option><option>Vente</option></select><button onClick={()=>document.getElementById("annonces")?.scrollIntoView({behavior:"smooth"})} className="btn green">Rechercher</button></div>
+    <div className="flex flex-wrap gap-3 mt-5 text-sm text-[#796f62]"><span>✓ Prix en FCFA</span><span>✓ WhatsApp direct</span><span>✓ Localisation approximative</span><span>✓ Mobile-first</span></div>
    </div>
   </section>
 
-  <section className="container py-10 grid md:grid-cols-4 gap-4">
-   <Stat icon={<Home/>} n="Logements" s="Maisons & appartements"/><Stat icon={<Landmark/>} n="Terrains" s="Parcelles à vendre"/><Stat icon={<Building2/>} n="Locaux" s="Commerces & bureaux"/><Stat icon={<ShieldCheck/>} n="Annonces" s="Infos vérifiables"/>
+  <section className="container -mt-5 relative z-10 grid grid-cols-2 md:grid-cols-4 gap-3"><Stat n="Maisons" s="Location & vente"/><Stat n="Appartements" s="Pour vivre ou investir"/><Stat n="Terrains" s="Parcelles à Bangui"/><Stat n="Commerces" s="Boutiques & bureaux"/></section>
+
+  <section id="annonces" className="container py-14"><div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-7"><div><p className="eyebrow">À découvrir</p><h2 className="sectionTitle">Biens disponibles à Bangui</h2></div><div className="flex items-center gap-2 text-sm text-[#756b5e]"><SlidersHorizontal size={17}/>{filtered.length} annonce(s)</div></div>
+   <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">{filtered.map(b=><article key={b.id} className="listing"><div className="relative"><img loading="lazy" src={b.img} alt={b.title} className="w-full h-52 object-cover"/><span className="absolute left-3 top-3 tag">{b.transaction}</span><button onClick={()=>setFav(x=>x.includes(b.id)?x.filter(i=>i!==b.id):[...x,b.id])} className="absolute right-3 top-3 bg-white/95 rounded-full p-2.5 shadow"><Heart size={18} fill={fav.includes(b.id)?"currentColor":"none"}/></button></div><div className="p-5"><div className="text-xs font-bold text-[#b95f45]">{b.type}</div><h3 className="font-black text-lg mt-1">{b.title}</h3><div className="price">{money(b.price)}{b.transaction==="Location"&&<span className="text-xs font-medium text-[#796f62]"> / mois</span>}</div><div className="text-sm text-[#746b60] mt-2 flex gap-1"><MapPin size={15}/>{b.loc} · {b.info}</div><div className="grid grid-cols-2 gap-2 mt-4"><button onClick={()=>setDetail(b)} className="btn outlineBtn"><Eye size={16}/> Détails</button><a target="_blank" rel="noreferrer" href={wa(b.phone)} className="btn whatsapp"><MessageCircle size={17}/> WhatsApp</a></div></div></article>)}</div>
+   {filtered.length===0&&<div className="listing p-10 text-center">Aucune annonce ne correspond à ces critères.</div>}
   </section>
 
-  <section id="annonces" className="container pb-16">
-   <div className="flex items-end justify-between mb-6"><div><p className="text-[#d09b35] font-bold">À découvrir</p><h2 className="text-3xl font-black text-[#10233f]">Annonces récentes</h2></div><button className="font-bold flex items-center">Voir tout <ChevronRight size={18}/></button></div>
-   {filtered.length===0 ? <div className="card p-10 text-center text-gray-500">Aucun bien ne correspond à votre recherche.</div> :
-   <div className="grid md:grid-cols-3 gap-6">{filtered.map(b=><article className="card overflow-hidden hover:-translate-y-1 transition" key={b.id}>
-    <div className="relative"><img src={b.img} alt={b.title} className="w-full h-56 object-cover"/><button aria-label="Ajouter aux favoris" onClick={()=>setFav(x=>x.includes(b.id)?x.filter(i=>i!==b.id):[...x,b.id])} className="absolute right-3 top-3 bg-white rounded-full p-3 shadow"><Heart size={18} fill={fav.includes(b.id)?"currentColor":"none"}/></button><span className="absolute left-3 bottom-3 bg-[#10233f] text-white rounded-full px-3 py-1 text-xs font-bold">{b.type}</span></div>
-    <div className="p-5"><h3 className="font-black text-lg">{b.title}</h3><div className="text-[#d09b35] font-black mt-2">{b.price}</div><div className="text-gray-500 text-sm mt-2 flex items-center gap-1"><MapPin size={15}/>{b.loc} · {b.info}</div><button onClick={()=>setAuth("signup")} className="btn dark w-full mt-4"><Eye size={17}/><span className="ml-2">Voir le bien</span></button></div>
-   </article>)}</div>}
-  </section>
+  <section id="deposer" className="bg-[#294b3b] text-white"><div className="container py-14 grid md:grid-cols-2 gap-8 items-center"><div><p className="text-[#e6b36b] font-bold">Propriétaires & agences</p><h2 className="text-3xl md:text-4xl font-black mt-2">Vous avez un bien à louer ou à vendre ?</h2><p className="text-white/75 mt-3 max-w-xl">Déposez votre annonce avec photos, prix, quartier et numéro WhatsApp. Les visiteurs pourront vous contacter directement.</p><button onClick={()=>setDeposit(true)} className="btn cream mt-6"><Plus size={18}/> Déposer une annonce</button></div><div className="rounded-3xl bg-white/10 border border-white/15 p-6"><div className="grid grid-cols-2 gap-4"><Mini t="Maison" d="Location / vente"/><Mini t="Appartement" d="Longue durée"/><Mini t="Terrain" d="À vendre"/><Mini t="Commerce" d="Boutique / bureau"/></div></div></div></section>
 
-  <section id="agences" className="bg-white border-y"><div className="container py-14 grid md:grid-cols-2 gap-10 items-center"><div><p className="text-[#d09b35] font-bold">Pour propriétaires & agences</p><h2 className="text-3xl font-black text-[#10233f]">Publiez votre bien et recevez des demandes.</h2><p className="text-gray-600 mt-3">Créez votre compte gratuitement puis ajoutez photos, prix, localisation, caractéristiques et moyens de contact.</p><button onClick={()=>setAuth("signup")} className="btn gold mt-5"><Plus size={18}/><span className="ml-2">Publier une annonce</span></button></div>
-   <div className="card p-6"><h3 className="font-black text-xl">Catégories Immo RCA</h3><div className="grid grid-cols-2 gap-3 mt-5"><Mini t="Vente" d="Maisons & terrains"/><Mini t="Location" d="Longue durée"/><Mini t="Commercial" d="Bureaux & boutiques"/><Mini t="Terrain" d="Parcelles"/></div></div>
-  </div></section>
+  <section id="apropos" className="container py-14"><div className="grid md:grid-cols-2 gap-10"><div><p className="eyebrow">À propos</p><h2 className="sectionTitle">Une plateforme pensée pour le marché immobilier de Bangui.</h2><p className="text-[#665d52] mt-4 leading-7">Immo RCA facilite la mise en relation entre personnes qui cherchent un logement ou un terrain et propriétaires ou agences qui souhaitent publier leurs biens. Les coordonnées exactes et les visites sont à confirmer directement avec l'annonceur.</p></div><div id="contact" className="listing p-7"><p className="eyebrow">Contact</p><h3 className="text-2xl font-black">Une question ?</h3><p className="text-[#746b60] mt-2">Pour une annonce ou un partenariat, contactez-nous par téléphone ou WhatsApp.</p><div className="flex flex-col gap-3 mt-5"><a className="btn green w-full" href="tel:+23670000000"><Phone size={18}/> Appeler Immo RCA</a><a className="btn whatsapp w-full" target="_blank" rel="noreferrer" href={wa("+23670000000")}><MessageCircle size={18}/> Écrire sur WhatsApp</a></div></div></div></section>
 
-  <section id="comment" className="container py-14"><h2 className="text-3xl font-black text-center text-[#10233f]">Comment ça marche ?</h2><div className="grid md:grid-cols-3 gap-5 mt-8"><Step n="1" t="Créez votre compte" d="Inscrivez-vous rapidement pour sauvegarder vos recherches et favoris."/><Step n="2" t="Recherchez & comparez" d="Consultez photos, prix, surface et informations des biens."/><Step n="3" t="Contactez" d="Appelez ou écrivez au propriétaire ou à l'agence."/></div></section>
+  <footer className="bg-[#21382e] text-white"><div className="container py-9 flex flex-col md:flex-row justify-between gap-4"><div><b className="text-2xl">Immo RCA</b><p className="text-white/65 mt-1">L'immobilier à Bangui, simplement.</p></div><div className="text-sm text-white/55">© 2026 Immo RCA · Bangui, RCA</div></div></footer>
 
-  <section className="container pb-16"><div className="rounded-3xl bg-[#f7f1e5] p-8 md:p-12 flex flex-col md:flex-row items-center justify-between gap-6"><div><p className="text-[#b47d1c] font-bold">Nouveau sur Immo RCA</p><h2 className="text-3xl font-black text-[#10233f] mt-1">Vous cherchez un bien ? Commencez gratuitement.</h2><p className="text-gray-600 mt-2">Votre compte vous permet de retrouver facilement vos favoris.</p></div><button onClick={()=>setAuth("signup")} className="btn dark whitespace-nowrap"><UserPlus size={18}/><span className="ml-2">Créer mon compte</span></button></div></section>
-
-  <footer className="bg-[#10233f] text-white"><div className="container py-10 flex flex-col md:flex-row justify-between gap-4"><div><b className="text-2xl">Immo RCA</b><p className="text-white/60">La plateforme immobilière pour la République centrafricaine.</p></div><div className="text-sm text-white/60">© 2026 Immo RCA · Bangui, RCA</div></div></footer>
-
-  {auth && <AuthModal mode={auth} onClose={()=>setAuth(null)} onSwitch={()=>setAuth(auth==="signup"?"login":"signup")} onAccess={(role)=>{setUserRole(role);setAuth(null)}}/>}
-  {userRole && <Dashboard role={userRole} onClose={()=>setUserRole(null)}/>}
+  {detail&&<Detail b={detail} close={()=>setDetail(null)} money={money} wa={wa}/>}
+  {deposit&&<Deposit close={()=>setDeposit(false)}/>}
+  {auth&&<Auth mode={auth} close={()=>setAuth(null)} switchMode={()=>setAuth(auth==="signup"?"login":"signup")}/>}
  </main>
 }
 
-function AuthModal({mode,onClose,onSwitch,onAccess}:{mode:"signup"|"login",onClose:()=>void,onSwitch:()=>void,onAccess:(role:"client"|"vendeur")=>void}){
- const[name,setName]=useState(""); const[email,setEmail]=useState(""); const[password,setPassword]=useState(""); const[role,setRole]=useState<"client"|"vendeur">("client"); const[show,setShow]=useState(false); const[done,setDone]=useState(false);
- const submit=(e:React.FormEvent)=>{e.preventDefault(); if(mode==="signup"){localStorage.setItem("immo_rca_user",JSON.stringify({name,email,role}));} else {const saved=localStorage.getItem("immo_rca_user"); if(saved){try{setRole(JSON.parse(saved).role||"client")}catch{}}} setDone(true);};
- return <div className="fixed inset-0 z-50 bg-[#071426]/70 backdrop-blur-sm grid place-items-center p-4" onMouseDown={e=>{if(e.target===e.currentTarget)onClose()}}>
-  <div className="bg-white rounded-3xl w-full max-w-md shadow-2xl overflow-hidden">
-   <div className="p-6 border-b flex justify-between items-center"><div><div className="text-xs font-bold text-[#b47d1c] uppercase tracking-wide">Immo RCA</div><h2 className="text-2xl font-black text-[#10233f] mt-1">{mode==="signup"?"Créer votre compte":"Se connecter"}</h2></div><button onClick={onClose} className="p-2 rounded-full hover:bg-gray-100"><X/></button></div>
-   {done ? <div className="p-8 text-center"><CheckCircle2 className="mx-auto text-green-600" size={52}/><h3 className="font-black text-xl mt-4">{mode==="signup"?"Compte créé !":"Connexion effectuée !"}</h3><p className="text-gray-500 mt-2">{mode==="signup" ? "Votre espace personnel est prêt." : "Bienvenue sur votre espace Immo RCA."}</p><button onClick={()=>onAccess(role)} className="btn dark w-full mt-6">Accéder à mon espace</button></div> :
-   <form onSubmit={submit} className="p-6 space-y-4">
-    {mode==="signup" && <div><label className="text-sm font-bold">Nom complet</label><input required className="input mt-1" value={name} onChange={e=>setName(e.target.value)} placeholder="Ex. Jean Dupont"/></div>}
-    <div><label className="text-sm font-bold">Email</label><input required type="email" className="input mt-1" value={email} onChange={e=>setEmail(e.target.value)} placeholder="vous@email.com"/></div>
-    <div><label className="text-sm font-bold">Mot de passe</label><div className="relative"><input required minLength={6} type={show?"text":"password"} className="input mt-1 pr-12" value={password} onChange={e=>setPassword(e.target.value)} placeholder="6 caractères minimum"/><button type="button" onClick={()=>setShow(!show)} className="absolute right-3 top-4 text-gray-500">{show?<EyeOff size={18}/>:<Eye size={18}/>}</button></div></div>
-    {mode==="signup" && <div><label className="text-sm font-bold">Je suis</label><div className="grid grid-cols-2 gap-3 mt-2"><button type="button" onClick={()=>setRole("client")} className={"p-4 rounded-xl border text-left "+(role==="client"?"border-[#d8a84e] bg-[#f7f1e5]":"border-gray-200")}><b>🏠 Client</b><div className="text-xs text-gray-500 mt-1">Je cherche un bien</div></button><button type="button" onClick={()=>setRole("vendeur")} className={"p-4 rounded-xl border text-left "+(role==="vendeur"?"border-[#d8a84e] bg-[#f7f1e5]":"border-gray-200")}><b>🏢 Vendeur</b><div className="text-xs text-gray-500 mt-1">Je publie des biens</div></button></div></div>}
-    <button className="btn dark w-full">{mode==="signup"?"Créer mon compte":"Se connecter"}</button>
-    <p className="text-center text-sm text-gray-500">{mode==="signup"?"Déjà un compte ?":"Pas encore de compte ?"} <button type="button" onClick={onSwitch} className="font-bold text-[#b47d1c]">{mode==="signup"?"Se connecter":"Créer un compte"}</button></p>
-   </form>}
-  </div>
- </div>
-}
+function Stat({n,s}:{n:string,s:string}){return <div className="listing p-4"><b className="text-[#294b3b]">{n}</b><div className="text-xs text-[#85796a] mt-1">{s}</div></div>}
+function Mini({t,d}:{t:string,d:string}){return <div className="rounded-2xl bg-white/10 p-4 border border-white/10"><b>{t}</b><div className="text-xs text-white/60 mt-1">{d}</div></div>}
 
-function Stat({icon,n,s}:{icon:React.ReactNode,n:string,s:string}){return <div className="card p-5 flex items-center gap-4"><div className="p-3 rounded-xl bg-[#f7f1e5] text-[#b47d1c]">{icon}</div><div><div className="font-black">{n}</div><div className="text-xs text-gray-500">{s}</div></div></div>}
-function Mini({t,d}:{t:string,d:string}){return <div className="border rounded-xl p-4 hover:border-[#d8a84e] transition"><b>{t}</b><div className="text-xs text-gray-500">{d}</div></div>}
-function Step({n,t,d}:{n:string,t:string,d:string}){return <div className="card p-6"><div className="w-10 h-10 rounded-full bg-[#d8a84e] grid place-items-center font-black">{n}</div><h3 className="font-black text-xl mt-4">{t}</h3><p className="text-gray-500 mt-2">{d}</p></div>}
+function Detail({b,close,money,wa}:{b:any,close:()=>void,money:(n:number)=>string,wa:(p:string)=>string}){return <div className="fixed inset-0 z-50 bg-black/60 p-3 md:p-8 overflow-y-auto"><div className="max-w-4xl mx-auto bg-[#fbf7ef] rounded-3xl overflow-hidden"><div className="relative"><img src={b.img} alt={b.title} className="w-full h-64 md:h-96 object-cover"/><button onClick={close} className="absolute right-4 top-4 bg-white rounded-full p-3"><X/></button></div><div className="p-6 md:p-8"><span className="tag">{b.transaction}</span><h2 className="text-3xl font-black text-[#294b3b] mt-3">{b.title}</h2><div className="price text-2xl">{money(b.price)}{b.transaction==="Location"&&" / mois"}</div><div className="flex gap-2 items-center text-[#746b60] mt-2"><MapPin size={17}/>{b.loc} · {b.info}</div><p className="leading-7 text-[#625a50] mt-6">{b.desc}</p><div className="rounded-2xl bg-[#f0e7d8] p-4 mt-5 text-sm text-[#655c50]">📍 Localisation approximative : le quartier est indiqué pour protéger la vie privée. Confirmez l'adresse et les conditions avec l'annonceur avant toute visite ou paiement.</div><div className="grid sm:grid-cols-2 gap-3 mt-6"><a href={`tel:${b.phone}`} className="btn green"><Phone size={18}/> Appeler</a><a target="_blank" rel="noreferrer" href={wa(b.phone)} className="btn whatsapp"><MessageCircle size={18}/> Contacter via WhatsApp</a></div></div></div></div>}
 
+function Deposit({close}:{close:()=>void}){const[done,setDone]=useState(false); return <div className="fixed inset-0 z-50 bg-black/60 p-4 grid place-items-center"><div className="bg-[#fbf7ef] rounded-3xl w-full max-w-lg max-h-[92vh] overflow-y-auto"><div className="p-6 border-b flex justify-between"><div><p className="eyebrow">Immo RCA</p><h2 className="text-2xl font-black">Déposer une annonce</h2></div><button onClick={close}><X/></button></div>{done?<div className="p-8 text-center"><div className="text-5xl">✅</div><h3 className="text-xl font-black mt-3">Annonce envoyée</h3><p className="text-[#746b60] mt-2">Votre demande est enregistrée. La publication réelle nécessitera la connexion à la base de données.</p><button onClick={close} className="btn green mt-6">Fermer</button></div>:<form onSubmit={e=>{e.preventDefault();setDone(true)}} className="p-6 space-y-4"><input required className="filterInput w-full" placeholder="Titre de l'annonce"/><div className="grid grid-cols-2 gap-3"><select className="filterInput"><option>Maison</option><option>Appartement</option><option>Terrain</option><option>Commerce</option></select><select className="filterInput"><option>Location</option><option>Vente</option></select></div><select required className="filterInput w-full">{quartiers.filter(x=>x!=="Tous les quartiers").map(x=><option key={x}>{x}</option>)}</select><input required type="number" className="filterInput w-full" placeholder="Prix en FCFA"/><input required className="filterInput w-full" placeholder="Téléphone / WhatsApp"/><textarea className="filterInput w-full min-h-28" placeholder="Description du bien"/><button className="btn terracotta w-full">Envoyer l'annonce</button></form>}</div></div>}
 
-function Dashboard({role,onClose}:{role:"client"|"vendeur",onClose:()=>void}){
- return <div className="fixed inset-0 z-[60] bg-[#f7f8fa] overflow-y-auto">
-  <header className="bg-white border-b sticky top-0 z-10"><div className="container flex items-center justify-between py-4"><div><b className="text-xl text-[#10233f]">Immo RCA</b><div className="text-xs text-gray-500">Mon espace {role==="vendeur"?"vendeur":"client"}</div></div><button onClick={onClose} className="btn dark">Retour aux annonces</button></div></header>
-  <div className="container py-8">
-   <div className="rounded-3xl bg-[#10233f] text-white p-8"><p className="text-[#d8a84e] font-bold">Bienvenue 👋</p><h1 className="text-3xl md:text-4xl font-black mt-2">{role==="vendeur"?"Espace vendeur":"Espace client"}</h1><p className="text-white/70 mt-2">{role==="vendeur"?"Gérez vos annonces et recevez les demandes des personnes intéressées.":"Retrouvez vos favoris, vos recherches et contactez les propriétaires."}</p></div>
-   <div className="grid md:grid-cols-3 gap-5 mt-6">
-    {role==="vendeur" ? <>
-      <div className="card p-6"><div className="text-3xl">➕</div><h2 className="font-black text-xl mt-3">Publier un bien</h2><p className="text-gray-500 mt-2">Ajoutez maison, appartement, terrain ou local.</p><button className="btn gold mt-4 w-full">Nouvelle annonce</button></div>
-      <div className="card p-6"><div className="text-3xl">🏠</div><h2 className="font-black text-xl mt-3">Mes annonces</h2><p className="text-gray-500 mt-2">Gérez vos biens publiés.</p><button className="btn dark mt-4 w-full">Voir mes annonces</button></div>
-      <div className="card p-6"><div className="text-3xl">💬</div><h2 className="font-black text-xl mt-3">Demandes reçues</h2><p className="text-gray-500 mt-2">Consultez les contacts intéressés.</p><button className="btn dark mt-4 w-full">Voir les demandes</button></div>
-    </> : <>
-      <div className="card p-6"><div className="text-3xl">❤️</div><h2 className="font-black text-xl mt-3">Mes favoris</h2><p className="text-gray-500 mt-2">Retrouvez les biens que vous avez enregistrés.</p><button className="btn dark mt-4 w-full">Voir mes favoris</button></div>
-      <div className="card p-6"><div className="text-3xl">🔎</div><h2 className="font-black text-xl mt-3">Mes recherches</h2><p className="text-gray-500 mt-2">Reprenez vos recherches immobilières.</p><button className="btn dark mt-4 w-full">Mes recherches</button></div>
-      <div className="card p-6"><div className="text-3xl">💬</div><h2 className="font-black text-xl mt-3">Mes contacts</h2><p className="text-gray-500 mt-2">Retrouvez vos échanges avec les vendeurs.</p><button className="btn dark mt-4 w-full">Voir mes contacts</button></div>
-    </>}
-   </div>
-  </div>
- </div>
-}
+function Auth({mode,close,switchMode}:{mode:"signup"|"login",close:()=>void,switchMode:()=>void}){return <div className="fixed inset-0 z-50 bg-black/60 p-4 grid place-items-center"><div className="bg-[#fbf7ef] rounded-3xl w-full max-w-md"><div className="p-6 border-b flex justify-between"><div><p className="eyebrow">Immo RCA</p><h2 className="text-2xl font-black">{mode==="signup"?"Créer un compte":"Connexion"}</h2></div><button onClick={close}><X/></button></div><form onSubmit={e=>{e.preventDefault();close();}} className="p-6 space-y-4"><input required className="filterInput w-full" placeholder="Nom complet"/><input required type="tel" className="filterInput w-full" placeholder="Téléphone / WhatsApp"/><input required type="password" minLength={6} className="filterInput w-full" placeholder="Mot de passe"/>{mode==="signup"&&<div className="grid grid-cols-2 gap-3"><button type="button" className="p-4 rounded-xl border border-[#d8b58e] bg-[#f0e7d8] text-left"><b>🏠 Client</b><div className="text-xs">Je cherche un bien</div></button><button type="button" className="p-4 rounded-xl border text-left"><b>🏢 Propriétaire / agence</b><div className="text-xs">Je publie des biens</div></button></div>}<button className="btn green w-full">{mode==="signup"?"Créer mon compte":"Se connecter"}</button><button type="button" onClick={switchMode} className="w-full text-sm font-bold text-[#b95f45]">{mode==="signup"?"J'ai déjà un compte":"Créer un compte"}</button></form></div></div>}
