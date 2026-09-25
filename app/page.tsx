@@ -1,7 +1,7 @@
 "use client";
 
 import {useMemo,useState} from "react";
-import {Search,MapPin,Home,Building2,Landmark,KeyRound,Heart,Plus,ShieldCheck,ChevronRight,X,UserPlus,Eye,MessageCircle,Phone,Menu,SlidersHorizontal} from "lucide-react";
+import {Search,MapPin,KeyRound,Heart,ShieldCheck,X,UserPlus,Eye,MessageCircle,Phone,Menu,SlidersHorizontal} from "lucide-react";
 
 const quartiers=["Tous les quartiers","Centre-ville","Lakouanga","Boy-Rabe","Kolongo","Miskine","PK5","PK12","Fouh","Sica 1","Sica 2","Bimbo"];
 const biens=[
@@ -19,7 +19,7 @@ export default function Page(){
  const money=(n:number)=>n.toLocaleString("fr-FR")+" FCFA";
  const wa=(p:string)=>`https://wa.me/${p.replace(/\\D/g,"")}?text=${encodeURIComponent("Bonjour, je suis intéressé(e) par votre annonce sur Immo RCA.")}`;
  return <main className="min-h-screen bg-[#fbf7ef] text-[#2b2924]">
-  <header className="sticky top-0 z-40 bg-[#fbf7ef]/95 backdrop-blur border-b border-[#e7ddcd]">
+  <header className="page-enter sticky top-0 z-40 bg-[#fbf7ef]/95 backdrop-blur border-b border-[#e7ddcd]">
    <div className="container flex items-center justify-between py-3">
     <a href="#accueil" className="flex items-center gap-3"><div className="w-11 h-11 rounded-2xl bg-[#b95f45] text-white grid place-items-center font-black text-xl">I</div><div><b className="text-xl text-[#294b3b]">Immo RCA</b><div className="text-[11px] text-[#796f62]">Bangui · République centrafricaine</div></div></a>
     <nav className="hidden lg:flex gap-6 text-sm font-bold"><a href="#annonces">Annonces</a><a href="#apropos">À propos</a><a href="#contact">Contact</a></nav>
@@ -28,7 +28,7 @@ export default function Page(){
    {menu&&<div className="lg:hidden border-t bg-white px-5 py-4 space-y-3 font-bold"><a className="block" href="#annonces" onClick={()=>setMenu(false)}>Annonces</a><a className="block" href="#apropos" onClick={()=>setMenu(false)}>À propos</a><a className="block" href="#contact" onClick={()=>setMenu(false)}>Contact</a></div>}
   </header>
 
-  <section id="accueil" className="heroWarm">
+  <section id="accueil" className="heroWarm hero-enter">
    <div className="container py-14 md:py-20"><span className="badge"><ShieldCheck size={15}/> Immobilier local à Bangui</span><h1 className="text-4xl md:text-6xl font-black max-w-4xl leading-tight mt-5 text-[#294b3b]">Trouvez un <span className="text-[#b95f45]">chez-vous</span> à Bangui.</h1><p className="max-w-2xl text-[#665d52] text-lg mt-4">Maisons, appartements, terrains et commerces. Recherchez simplement puis contactez directement l'annonceur sur WhatsApp.</p>
     <div className="searchBox mt-8"><div className="flex items-center gap-2 flex-1 min-w-[220px]"><Search size={20}/><input value={q} onChange={e=>setQ(e.target.value)} className="bg-transparent outline-none w-full" placeholder="Quartier, type de bien..."/></div><select className="filterInput" value={quartier} onChange={e=>setQuartier(e.target.value)}>{quartiers.map(x=><option key={x}>{x}</option>)}</select><select className="filterInput" value={type} onChange={e=>setType(e.target.value)}><option>Tous</option><option>Maison</option><option>Appartement</option><option>Terrain</option><option>Commerce</option></select><select className="filterInput" value={transaction} onChange={e=>setTransaction(e.target.value)}><option>Tous</option><option>Location</option><option>Vente</option></select><button onClick={()=>document.getElementById("annonces")?.scrollIntoView({behavior:"smooth"})} className="btn green">Rechercher</button></div>
     <div className="flex flex-wrap gap-3 mt-5 text-sm text-[#796f62]"><span>✓ Prix en FCFA</span><span>✓ WhatsApp direct</span><span>✓ Localisation approximative</span><span>✓ Mobile-first</span></div>
@@ -37,8 +37,8 @@ export default function Page(){
 
   <section className="container -mt-5 relative z-10 grid grid-cols-2 md:grid-cols-4 gap-3"><Stat n="Maisons" s="Location & vente"/><Stat n="Appartements" s="Pour vivre ou investir"/><Stat n="Terrains" s="Parcelles à Bangui"/><Stat n="Commerces" s="Boutiques & bureaux"/></section>
 
-  <section id="annonces" className="container py-14"><div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-7"><div><p className="eyebrow">À découvrir</p><h2 className="sectionTitle">Biens disponibles à Bangui</h2></div><div className="flex items-center gap-2 text-sm text-[#756b5e]"><SlidersHorizontal size={17}/>{filtered.length} annonce(s)</div></div>
-   <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">{filtered.map(b=><article key={b.id} className="listing"><div className="relative"><img loading="lazy" src={b.img} alt={b.title} className="w-full h-52 object-cover"/><span className="absolute left-3 top-3 tag">{b.transaction}</span><button onClick={()=>setFav(x=>x.includes(b.id)?x.filter(i=>i!==b.id):[...x,b.id])} className="absolute right-3 top-3 bg-white/95 rounded-full p-2.5 shadow"><Heart size={18} fill={fav.includes(b.id)?"currentColor":"none"}/></button></div><div className="p-5"><div className="text-xs font-bold text-[#b95f45]">{b.type}</div><h3 className="font-black text-lg mt-1">{b.title}</h3><div className="price">{money(b.price)}{b.transaction==="Location"&&<span className="text-xs font-medium text-[#796f62]"> / mois</span>}</div><div className="text-sm text-[#746b60] mt-2 flex gap-1"><MapPin size={15}/>{b.loc} · {b.info}</div><div className="grid grid-cols-2 gap-2 mt-4"><button onClick={()=>setDetail(b)} className="btn outlineBtn"><Eye size={16}/> Détails</button><a target="_blank" rel="noreferrer" href={wa(b.phone)} className="btn whatsapp"><MessageCircle size={17}/> WhatsApp</a></div></div></article>)}</div>
+  <section id="annonces" className="container py-14 section-enter"><div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-7"><div><p className="eyebrow">À découvrir</p><h2 className="sectionTitle">Biens disponibles à Bangui</h2></div><div className="flex items-center gap-2 text-sm text-[#756b5e]"><SlidersHorizontal size={17}/>{filtered.length} annonce(s)</div></div>
+   <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">{filtered.map(b=><article key={b.id} className="listing card-enter"><div className="relative"><img loading="lazy" src={b.img} alt={b.title} className="w-full h-52 object-cover"/><span className="absolute left-3 top-3 tag">{b.transaction}</span><button onClick={()=>setFav(x=>x.includes(b.id)?x.filter(i=>i!==b.id):[...x,b.id])} className="absolute right-3 top-3 bg-white/95 rounded-full p-2.5 shadow"><Heart size={18} fill={fav.includes(b.id)?"currentColor":"none"}/></button></div><div className="p-5"><div className="text-xs font-bold text-[#b95f45]">{b.type}</div><h3 className="font-black text-lg mt-1">{b.title}</h3><div className="price">{money(b.price)}{b.transaction==="Location"&&<span className="text-xs font-medium text-[#796f62]"> / mois</span>}</div><div className="text-sm text-[#746b60] mt-2 flex gap-1"><MapPin size={15}/>{b.loc} · {b.info}</div><div className="grid grid-cols-2 gap-2 mt-4"><button onClick={()=>setDetail(b)} className="btn outlineBtn"><Eye size={16}/> Détails</button><a target="_blank" rel="noreferrer" href={wa(b.phone)} className="btn whatsapp"><MessageCircle size={17}/> WhatsApp</a></div></div></article>)}</div>
    {filtered.length===0&&<div className="listing p-10 text-center">Aucune annonce ne correspond à ces critères.</div>}
   </section>
 
@@ -49,12 +49,12 @@ export default function Page(){
   <footer className="bg-[#21382e] text-white"><div className="container py-9 flex flex-col md:flex-row justify-between gap-4"><div><b className="text-2xl">Immo RCA</b><p className="text-white/65 mt-1">L'immobilier à Bangui, simplement.</p></div><div className="text-sm text-white/55">© 2026 Immo RCA · Bangui, RCA</div></div></footer>
 
   {detail&&<Detail b={detail} close={()=>setDetail(null)} money={money} wa={wa}/>}
-  {deposit&&<Deposit close={()=>setDeposit(false)}/>}
+  
   {auth&&<Auth mode={auth} close={()=>setAuth(null)} switchMode={()=>setAuth(auth==="signup"?"login":"signup")}/>}
  </main>
 }
 
-function Stat({n,s}:{n:string,s:string}){return <div className="listing p-4"><b className="text-[#294b3b]">{n}</b><div className="text-xs text-[#85796a] mt-1">{s}</div></div>}
+function Stat({n,s}:{n:string,s:string}){return <div className="listing stat-enter p-4"><b className="text-[#294b3b]">{n}</b><div className="text-xs text-[#85796a] mt-1">{s}</div></div>}
 function Mini({t,d}:{t:string,d:string}){return <div className="rounded-2xl bg-white/10 p-4 border border-white/10"><b>{t}</b><div className="text-xs text-white/60 mt-1">{d}</div></div>}
 
 function Detail({b,close,money,wa}:{b:any,close:()=>void,money:(n:number)=>string,wa:(p:string)=>string}){return <div className="fixed inset-0 z-50 bg-black/60 p-3 md:p-8 overflow-y-auto"><div className="max-w-4xl mx-auto bg-[#fbf7ef] rounded-3xl overflow-hidden"><div className="relative"><img src={b.img} alt={b.title} className="w-full h-64 md:h-96 object-cover"/><button onClick={close} className="absolute right-4 top-4 bg-white rounded-full p-3"><X/></button></div><div className="p-6 md:p-8"><span className="tag">{b.transaction}</span><h2 className="text-3xl font-black text-[#294b3b] mt-3">{b.title}</h2><div className="price text-2xl">{money(b.price)}{b.transaction==="Location"&&" / mois"}</div><div className="flex gap-2 items-center text-[#746b60] mt-2"><MapPin size={17}/>{b.loc} · {b.info}</div><p className="leading-7 text-[#625a50] mt-6">{b.desc}</p><div className="rounded-2xl bg-[#f0e7d8] p-4 mt-5 text-sm text-[#655c50]">📍 Localisation approximative : le quartier est indiqué pour protéger la vie privée. Confirmez l'adresse et les conditions avec l'annonceur avant toute visite ou paiement.</div><div className="grid sm:grid-cols-2 gap-3 mt-6"><a href={`tel:${b.phone}`} className="btn green"><Phone size={18}/> Appeler</a><a target="_blank" rel="noreferrer" href={wa(b.phone)} className="btn whatsapp"><MessageCircle size={18}/> Contacter via WhatsApp</a></div></div></div></div>}
