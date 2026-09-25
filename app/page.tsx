@@ -15,6 +15,7 @@ export default function Page(){
  const[fav,setFav]=useState<number[]>([]);
  const[auth,setAuth]=useState<"signup"|"login"|null>(null);
  const[menu,setMenu]=useState(false);
+ const[userRole,setUserRole]=useState<"client"|"vendeur"|null>(null);
  const filtered=useMemo(()=>biens.filter(b=>(type==="Tous"||b.type===type)&&(!q||((b.title+" "+b.loc).toLowerCase().includes(q.toLowerCase())))),[q,type]);
 
  return <main>
@@ -69,17 +70,18 @@ export default function Page(){
 
   <footer className="bg-[#10233f] text-white"><div className="container py-10 flex flex-col md:flex-row justify-between gap-4"><div><b className="text-2xl">Immo RCA</b><p className="text-white/60">La plateforme immobilière pour la République centrafricaine.</p></div><div className="text-sm text-white/60">© 2026 Immo RCA · Bangui, RCA</div></div></footer>
 
-  {auth && <AuthModal mode={auth} onClose={()=>setAuth(null)} onSwitch={()=>setAuth(auth==="signup"?"login":"signup")}/>}
+  {auth && <AuthModal mode={auth} onClose={()=>setAuth(null)} onSwitch={()=>setAuth(auth==="signup"?"login":"signup")} onAccess={(role)=>{setUserRole(role);setAuth(null)}}/>}
+  {userRole && <Dashboard role={userRole} onClose={()=>setUserRole(null)}/>}
  </main>
 }
 
-function AuthModal({mode,onClose,onSwitch}:{mode:"signup"|"login",onClose:()=>void,onSwitch:()=>void}){
+function AuthModal({mode,onClose,onSwitch,onAccess}:{mode:"signup"|"login",onClose:()=>void,onSwitch:()=>void,onAccess:(role:"client"|"vendeur")=>void}){
  const[name,setName]=useState(""); const[email,setEmail]=useState(""); const[password,setPassword]=useState(""); const[role,setRole]=useState<"client"|"vendeur">("client"); const[show,setShow]=useState(false); const[done,setDone]=useState(false);
- const submit=(e:React.FormEvent)=>{e.preventDefault(); if(mode==="signup"){localStorage.setItem("immo_rca_user",JSON.stringify({name,email,role}));} setDone(true);};
+ const submit=(e:React.FormEvent)=>{e.preventDefault(); if(mode==="signup"){localStorage.setItem("immo_rca_user",JSON.stringify({name,email,role}));} else {const saved=localStorage.getItem("immo_rca_user"); if(saved){try{setRole(JSON.parse(saved).role||"client")}catch{}}} setDone(true);};
  return <div className="fixed inset-0 z-50 bg-[#071426]/70 backdrop-blur-sm grid place-items-center p-4" onMouseDown={e=>{if(e.target===e.currentTarget)onClose()}}>
   <div className="bg-white rounded-3xl w-full max-w-md shadow-2xl overflow-hidden">
    <div className="p-6 border-b flex justify-between items-center"><div><div className="text-xs font-bold text-[#b47d1c] uppercase tracking-wide">Immo RCA</div><h2 className="text-2xl font-black text-[#10233f] mt-1">{mode==="signup"?"Créer votre compte":"Se connecter"}</h2></div><button onClick={onClose} className="p-2 rounded-full hover:bg-gray-100"><X/></button></div>
-   {done ? <div className="p-8 text-center"><CheckCircle2 className="mx-auto text-green-600" size={52}/><h3 className="font-black text-xl mt-4">{mode==="signup"?"Compte créé !":"Connexion effectuée !"}</h3><p className="text-gray-500 mt-2">{mode==="signup" ? "Votre espace personnel est prêt." : "Bienvenue sur votre espace Immo RCA."}</p><button onClick={onClose} className="btn dark w-full mt-6">Accéder à mon espace</button></div> :
+   {done ? <div className="p-8 text-center"><CheckCircle2 className="mx-auto text-green-600" size={52}/><h3 className="font-black text-xl mt-4">{mode==="signup"?"Compte créé !":"Connexion effectuée !"}</h3><p className="text-gray-500 mt-2">{mode==="signup" ? "Votre espace personnel est prêt." : "Bienvenue sur votre espace Immo RCA."}</p><button onClick={()=>onAccess(role)} className="btn dark w-full mt-6">Accéder à mon espace</button></div> :
    <form onSubmit={submit} className="p-6 space-y-4">
     {mode==="signup" && <div><label className="text-sm font-bold">Nom complet</label><input required className="input mt-1" value={name} onChange={e=>setName(e.target.value)} placeholder="Ex. Jean Dupont"/></div>}
     <div><label className="text-sm font-bold">Email</label><input required type="email" className="input mt-1" value={email} onChange={e=>setEmail(e.target.value)} placeholder="vous@email.com"/></div>
@@ -95,3 +97,24 @@ function AuthModal({mode,onClose,onSwitch}:{mode:"signup"|"login",onClose:()=>vo
 function Stat({icon,n,s}:{icon:React.ReactNode,n:string,s:string}){return <div className="card p-5 flex items-center gap-4"><div className="p-3 rounded-xl bg-[#f7f1e5] text-[#b47d1c]">{icon}</div><div><div className="font-black">{n}</div><div className="text-xs text-gray-500">{s}</div></div></div>}
 function Mini({t,d}:{t:string,d:string}){return <div className="border rounded-xl p-4 hover:border-[#d8a84e] transition"><b>{t}</b><div className="text-xs text-gray-500">{d}</div></div>}
 function Step({n,t,d}:{n:string,t:string,d:string}){return <div className="card p-6"><div className="w-10 h-10 rounded-full bg-[#d8a84e] grid place-items-center font-black">{n}</div><h3 className="font-black text-xl mt-4">{t}</h3><p className="text-gray-500 mt-2">{d}</p></div>}
+
+
+function Dashboard({role,onClose}:{role:"client"|"vendeur",onClose:()=>void}){
+ return <div className="fixed inset-0 z-[60] bg-[#f7f8fa] overflow-y-auto">
+  <header className="bg-white border-b sticky top-0 z-10"><div className="container flex items-center justify-between py-4"><div><b className="text-xl text-[#10233f]">Immo RCA</b><div className="text-xs text-gray-500">Mon espace {role==="vendeur"?"vendeur":"client"}</div></div><button onClick={onClose} className="btn dark">Retour aux annonces</button></div></header>
+  <div className="container py-8">
+   <div className="rounded-3xl bg-[#10233f] text-white p-8"><p className="text-[#d8a84e] font-bold">Bienvenue 👋</p><h1 className="text-3xl md:text-4xl font-black mt-2">{role==="vendeur"?"Espace vendeur":"Espace client"}</h1><p className="text-white/70 mt-2">{role==="vendeur"?"Gérez vos annonces et recevez les demandes des personnes intéressées.":"Retrouvez vos favoris, vos recherches et contactez les propriétaires."}</p></div>
+   <div className="grid md:grid-cols-3 gap-5 mt-6">
+    {role==="vendeur" ? <>
+      <div className="card p-6"><div className="text-3xl">➕</div><h2 className="font-black text-xl mt-3">Publier un bien</h2><p className="text-gray-500 mt-2">Ajoutez maison, appartement, terrain ou local.</p><button className="btn gold mt-4 w-full">Nouvelle annonce</button></div>
+      <div className="card p-6"><div className="text-3xl">🏠</div><h2 className="font-black text-xl mt-3">Mes annonces</h2><p className="text-gray-500 mt-2">Gérez vos biens publiés.</p><button className="btn dark mt-4 w-full">Voir mes annonces</button></div>
+      <div className="card p-6"><div className="text-3xl">💬</div><h2 className="font-black text-xl mt-3">Demandes reçues</h2><p className="text-gray-500 mt-2">Consultez les contacts intéressés.</p><button className="btn dark mt-4 w-full">Voir les demandes</button></div>
+    </> : <>
+      <div className="card p-6"><div className="text-3xl">❤️</div><h2 className="font-black text-xl mt-3">Mes favoris</h2><p className="text-gray-500 mt-2">Retrouvez les biens que vous avez enregistrés.</p><button className="btn dark mt-4 w-full">Voir mes favoris</button></div>
+      <div className="card p-6"><div className="text-3xl">🔎</div><h2 className="font-black text-xl mt-3">Mes recherches</h2><p className="text-gray-500 mt-2">Reprenez vos recherches immobilières.</p><button className="btn dark mt-4 w-full">Mes recherches</button></div>
+      <div className="card p-6"><div className="text-3xl">💬</div><h2 className="font-black text-xl mt-3">Mes contacts</h2><p className="text-gray-500 mt-2">Retrouvez vos échanges avec les vendeurs.</p><button className="btn dark mt-4 w-full">Voir mes contacts</button></div>
+    </>}
+   </div>
+  </div>
+ </div>
+}
