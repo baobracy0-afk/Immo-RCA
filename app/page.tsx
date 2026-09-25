@@ -14,7 +14,7 @@ const biens=[
 ];
 
 export default function Page(){
- const[q,setQ]=useState(""); const[type,setType]=useState("Tous"); const[quartier,setQuartier]=useState("Tous les quartiers"); const[transaction,setTransaction]=useState("Tous"); const[detail,setDetail]=useState<any>(null); const[fav,setFav]=useState<number[]>([]); const[auth,setAuth]=useState<"signup"|"login"|null>(null); const[deposit,setDeposit]=useState(false); const[menu,setMenu]=useState(false);
+ const[q,setQ]=useState(""); const[type,setType]=useState("Tous"); const[quartier,setQuartier]=useState("Tous les quartiers"); const[transaction,setTransaction]=useState("Tous"); const[detail,setDetail]=useState<any>(null); const[fav,setFav]=useState<number[]>([]); const[auth,setAuth]=useState<"signup"|"login"|null>(null); const[menu,setMenu]=useState(false);
  const filtered=useMemo(()=>biens.filter(b=>(type==="Tous"||b.type===type)&&(transaction==="Tous"||b.transaction===transaction)&&(quartier==="Tous les quartiers"||b.loc.toLowerCase().includes(quartier.toLowerCase()))&&(!q||(b.title+" "+b.loc+" "+b.type).toLowerCase().includes(q.toLowerCase()))),[q,type,quartier,transaction]);
  const money=(n:number)=>n.toLocaleString("fr-FR")+" FCFA";
  const wa=(p:string)=>`https://wa.me/${p.replace(/\\D/g,"")}?text=${encodeURIComponent("Bonjour, je suis intéressé(e) par votre annonce sur Immo RCA.")}`;
@@ -22,10 +22,10 @@ export default function Page(){
   <header className="sticky top-0 z-40 bg-[#fbf7ef]/95 backdrop-blur border-b border-[#e7ddcd]">
    <div className="container flex items-center justify-between py-3">
     <a href="#accueil" className="flex items-center gap-3"><div className="w-11 h-11 rounded-2xl bg-[#b95f45] text-white grid place-items-center font-black text-xl">I</div><div><b className="text-xl text-[#294b3b]">Immo RCA</b><div className="text-[11px] text-[#796f62]">Bangui · République centrafricaine</div></div></a>
-    <nav className="hidden lg:flex gap-6 text-sm font-bold"><a href="#annonces">Annonces</a><a href="#deposer">Déposer une annonce</a><a href="#apropos">À propos</a><a href="#contact">Contact</a></nav>
+    <nav className="hidden lg:flex gap-6 text-sm font-bold"><a href="#annonces">Annonces</a><a href="#apropos">À propos</a><a href="#contact">Contact</a></nav>
     <div className="flex gap-2"><button onClick={()=>setAuth("login")} className="hidden sm:inline-flex btn outlineBtn"><KeyRound size={16}/>Connexion</button><button onClick={()=>setAuth("signup")} className="btn terracotta"><UserPlus size={16}/>Créer un compte</button><button onClick={()=>setMenu(!menu)} className="lg:hidden p-3 rounded-xl bg-white border"><Menu size={20}/></button></div>
    </div>
-   {menu&&<div className="lg:hidden border-t bg-white px-5 py-4 space-y-3 font-bold"><a className="block" href="#annonces" onClick={()=>setMenu(false)}>Annonces</a><a className="block" href="#deposer" onClick={()=>setMenu(false)}>Déposer une annonce</a><a className="block" href="#apropos" onClick={()=>setMenu(false)}>À propos</a><a className="block" href="#contact" onClick={()=>setMenu(false)}>Contact</a></div>}
+   {menu&&<div className="lg:hidden border-t bg-white px-5 py-4 space-y-3 font-bold"><a className="block" href="#annonces" onClick={()=>setMenu(false)}>Annonces</a><a className="block" href="#apropos" onClick={()=>setMenu(false)}>À propos</a><a className="block" href="#contact" onClick={()=>setMenu(false)}>Contact</a></div>}
   </header>
 
   <section id="accueil" className="heroWarm">
