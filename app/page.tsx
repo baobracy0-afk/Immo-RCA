@@ -1,7 +1,7 @@
 "use client";
 
 import {useMemo,useState,useEffect} from "react";
-import {Search,MapPin,KeyRound,Heart,ShieldCheck,X,UserPlus,Eye,MessageCircle,Phone,Menu,SlidersHorizontal} from "lucide-react";
+import {Search,MapPin,KeyRound,Heart,ShieldCheck,X,UserPlus,Eye,MessageCircle,Phone,Menu,SlidersHorizontal,Plus} from "lucide-react";
 
 const quartiers=["Tous les quartiers","Centre-ville","Lakouanga","Boy-Rabe","Kolongo","Miskine","PK5","PK12","Fouh","Sica 1","Sica 2","Bimbo"];
 const biens=[
